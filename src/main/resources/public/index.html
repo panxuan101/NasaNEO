@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Find Your Star</title>
+<script src="jquery.js"></script>
+
+<style>
+
+      body{
+          background: url("/space_11.webp") no-repeat center;
+      }
+      
+      .rg_layout{
+          width: 900px;
+          hright: 500px;
+          border: 5px solid;
+         /* backgroud-color: #F5F5F5;*/
+          margin: auto;
+          margin-top:35px;
+          
+         }
+      .rg_left{
+          border:1px solid black;
+          float:left;  
+         }
+         
+         .rg_center{
+          border:1px solid black;
+          float:left;  
+         }
+         
+         .rg_right{
+          border:1px solid black;
+          float:right;  
+         }
+         #asteroids{
+         	visibility:hidden;
+         }
+</style>
+</head>
+<body>
+
+   <div class="rg_layout">
+     <div class="rg_left">
+       <p>New User</p>
+     </div>
+     
+     <div class="rg_center">
+        <div class="rg_form">
+          <form action="#" method="post">
+           <table border="1" align="center" width="500">
+             <tr>
+                 <td><label for="startdate">Start Date</label></td>
+                 <td><input type="date" name="number" id="startdate"></td>
+             </tr>
+             
+             <tr>
+                 <td><label for="enddate">End Date</label></td>
+                 <td><input type="date" name="number" id="enddate"></td>
+             </tr>
+           </table>
+           <button type="button" onclick="getNasaData(document.getElementById('startdate').value, document.getElementById('enddate').value)">Submit</button>
+          </form>
+        
+        </div>
+        <table id="asteroids" border="1" align="center" width="500" display="none">
+             <tr>
+             	<th>name</th>
+			    <th>id</th>
+			    <th>min diameter(meters)</th>
+			    <th>max diameter(meters)</th>
+			    <th>miss distance (kilometers)</th>
+			    <th>hazardous</th>
+             </tr>
+    </table>
+     </div>
+     
+     <div class="rg_right">
+      <p>NASA</p>
+     </div>
+   </div>
+   
+</body>
+<script>
+	function getNasaData(start, end){
+		
+		$.get( "/date/" + start + "/" + end, function(data) {
+			var  astTable = document.getElementById("asteroids");
+			astTable.style.visibility = "visible";
+			
+			let astInfo = JSON.parse(data);
+			let neos = astInfo["near_earth_objects"];
+			for(let dates in neos){
+				for(let index in dates){
+					let asteroid = neos[dates][index];
+					let row = astTable.insertRow(astTable.rows.length);
+					row.insertCell(0).innerHTML = asteroid["name"];
+					row.insertCell(1).innerHTML = asteroid["id"];
+					row.insertCell(2).innerHTML = asteroid["estimated_diameter"]["meters"]["estimated_diameter_min"];
+					row.insertCell(3).innerHTML = asteroid["estimated_diameter"]["meters"]["estimated_diameter_max"];
+					row.insertCell(4).innerHTML = asteroid["close_approach_data"][0]["miss_distance"]["kilometers"];
+					row.insertCell(5).innerHTML = asteroid["is_potentially_hazardous_asteroid"];
+				}
+			}
+			
+		});
+	}
+</script>
+</html>
